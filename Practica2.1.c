@@ -35,7 +35,7 @@ void timer(long long *tm, int period_us)
 
 void *escribe(void *arg) {
 
-	long long tm;	
+	long long tm;
 	uint32_t dato=0;
 	void * slot= arg;
 
@@ -54,8 +54,8 @@ void *escribe(void *arg) {
 }
 
 void *lee(void *arg) {
-	
-	long long tm;	
+
+	long long tm;
 	void * slot= arg;
 	uint32_t lectura;
 
@@ -64,7 +64,7 @@ void *lee(void *arg) {
 		// Espera de 1s
 		timer(&tm,1000000);
 		// Escribimos en memoria compartida el dato del numero de iteracion
-		leerSHM(slot,&lectura,sizeof(dato));
+		leerSHM(slot,&lectura,sizeof(lectura));
 		// Imprimimos por consola el numero de iteracion que se ha leido
 		printf("Lectura = %d\n",lectura);
 		if (lectura == 100) {
