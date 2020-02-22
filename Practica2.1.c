@@ -56,11 +56,10 @@ void *escribe(void *arg) {
 void *lee(void *arg) {
 	
 	long long tm;	
-	uint32_t dato=0;
 	void * slot= arg;
 	uint32_t lectura;
 
-	while (dato <= 100)
+	while (lectura <= 100)
 	{
 		// Espera de 1s
 		timer(&tm,1000000);
@@ -68,8 +67,8 @@ void *lee(void *arg) {
 		leerSHM(slot,&lectura,sizeof(dato));
 		// Imprimimos por consola el numero de iteracion que se ha leido
 		printf("Lectura = %d\n",lectura);
-		if (dato == 100) {
-			dato++;
+		if (lectura == 100) {
+			lectura++;
 		}
 	}
 
