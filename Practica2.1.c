@@ -34,7 +34,8 @@ void timer(long long *tm, int period_us)
 }
 
 void *escribe(void *arg) {
-	
+
+	long long tm;	
 	uint32_t dato=0;
 	void * slot= arg;
 
@@ -54,6 +55,7 @@ void *escribe(void *arg) {
 
 void *lee(void *arg) {
 	
+	long long tm;	
 	uint32_t dato=0;
 	void * slot= arg;
 	uint32_t lectura;
@@ -76,7 +78,7 @@ void *lee(void *arg) {
 
 
 int main(int argc, char *argv[]) {
-	long long tm;
+
 	uint32_t slot_id = 5001; // Identificador del Slot de memoria compartida
 	void* slot;
 	int shm_fd;
