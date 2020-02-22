@@ -9,7 +9,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <sched.h>
 #include "p2_libreria.h"
+#include <process.h>
 
 void timer(long long *tm, int period_us)
 {
@@ -83,17 +85,36 @@ int main(int argc, char *argv[]) {
 	int shm_fd;
 	pthread_t lector;
 	pthread_t escritor;
+	pid_t idproceso;
+	struct sched_param sp;
+	int prc;
 
 	// Creamos el slot de memoria compartida
 	shm_fd = crearSHM(slot_id,sizeof(uint16_t));
 
 	// Mapeamos el slot de memoria compartida
 	slot = mapearSHM(slot_id,sizeof(uint16_t));
+
+	//Control de prioridad del proceso
+	idproceso = getpid();
+	sched_getparam(idproceso, &sp);
+	printf("La prioridad inicial del proceso es: %d\n", sp.sched_priority );
+
+		//Cambiamos la prioridad
+	sp.sched_priority = 30;
+	sched_setparam(idproceso, &sp);
+
+		//La siguiente línea no es realmetne necesaria pero la usamos para verificar que efectivamente se ha cambiado la prioridad.
+	sched_getparam(idproceso, &sp);
+	printf("Establecida prioridad del proceso a: %d\n\n", sp.sched_priority );
+
 	puts("¡¡¡Comenzamos!!!");
 
-	//Lanzamos ambos hilos
+	//Lanzamos ambos hilos y priorizamos
 	pthread_create(&escritor, NULL, escribe, slot);
+	pthread_setschedprio(escritor, 35);
 	pthread_create(&lector, NULL, lee, slot);
+	pthread_setschedprio(lector, 35);
 
 	//Esperamos que acaben la ejecucuión los hilos.
 	pthread_join(escritor, NULL);
@@ -101,8 +122,9 @@ int main(int argc, char *argv[]) {
 
 	//Borramos el slot de memoria compartida
 	borrarSHM(slot_id, slot, shm_fd, sizeof(uint16_t));
-	return 0;
 
 	puts("¡¡¡Acabamos!!!");
+
+	return 0;
 
 }
