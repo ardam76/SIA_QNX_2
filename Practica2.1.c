@@ -9,7 +9,9 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <sched.h>
 #include "p2_libreria.h"
+#include <process.h>
 
 void timer(long long *tm, int period_us)
 {
@@ -83,13 +85,28 @@ int main(int argc, char *argv[]) {
 	int shm_fd;
 	pthread_t lector;
 	pthread_t escritor;
+	pid_t idproceso;
+	struct sched_param sp;
+	int prc;
 
 	// Creamos el slot de memoria compartida
 	shm_fd = crearSHM(slot_id,sizeof(uint16_t));
 
 	// Mapeamos el slot de memoria compartida
 	slot = mapearSHM(slot_id,sizeof(uint16_t));
+
+	//Control de prioridad
+	idproceso = getpid();
+	sched_getparam(idproceso, &sp);
+	printf("La prioridad inicial del proceso es: %d\n", sp.sched_priority );
+	sp.sched_priority = 30;
+	sched_setparam(idproceso, &sp);
+
+	sched_getparam(idproceso, &sp);
+	printf("Establecida prioridad del proceso a: %d\n\n", sp.sched_priority );
+
 	puts("¡¡¡Comenzamos!!!");
+
 
 	//Lanzamos ambos hilos
 	pthread_create(&escritor, NULL, escribe, slot);
